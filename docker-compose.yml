@@ -1,0 +1,13 @@
+version: '3'
+services:
+  # python-env:
+  #   build: .
+  #   ports:
+  #    - "5000:5000"
+  mlflow-server:
+    build: ./mlflow-server
+    container_name: mlflow-server
+    volumes:
+      - ./mlflow-server:/mlruns/
+    ports:
+      - "5000:5000"
