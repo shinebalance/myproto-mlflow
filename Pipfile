@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+requests = "*"
+lxml = "*"
+cssselect = "*"
+pandas = "*"
+sklearn = "*"
+mlflow = "*"
+matplotlib = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+req2url = "python scrape/req2url.py"
+train = "python mlproject/train.py"
+predict = "python mlproject/predict.py"
+mlflowui = 'mlflow ui'
