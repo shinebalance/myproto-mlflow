@@ -9,5 +9,6 @@ services:
     container_name: mlflow-server
     volumes:
       - ./mlflow-server:/mlruns/
+      - ./mlruns-artifacts:/mlruns-artifacts/
     ports:
       - "5000:5000"

@@ -1,4 +1,5 @@
 .env
 mlruns
 data
-artifact
+mlruns-artifacts
+.DS_Store
