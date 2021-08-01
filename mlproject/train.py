@@ -23,6 +23,10 @@ def main():
     # データ分割
     train_x, test_x ,train_y, test_y = divide_xydatas(df_preprocessed)
 
+    # tracking uri
+    mlflow.set_tracking_uri('http://localhost:5000/')
+    mlflow.set_experiment("/my-experiment-mlruns-artifacts")
+
     run = rfc_with_mlflow(train_x, test_x ,train_y, test_y)
 
     run_id = run.info.run_id
