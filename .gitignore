@@ -3,3 +3,9 @@ mlruns
 data
 mlruns-artifacts
 .DS_Store
+__pycache__/
+
+# Airflow関係
+airflow-server/airflow*
+airflow-server/logs
+airflow-server/webserver_config.py
