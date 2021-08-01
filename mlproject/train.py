@@ -3,6 +3,7 @@ from typing import Tuple
 import mlflow
 import pandas as pd
 import matplotlib
+# from local
 import config
 
 from sklearn.model_selection import train_test_split
@@ -28,16 +29,20 @@ def main():
     mlflow.set_experiment("/my-experiment-mlruns-artifacts")
 
     run = rfc_with_mlflow(train_x, test_x ,train_y, test_y)
-
     run_id = run.info.run_id
     print('====run_id=====>>',run_id)
 
-    # 推論評価用
+    # 実際に翌日のデータを推論する
     loaded_model = mlflow.sklearn.load_model(f'runs:/{run_id}/model')
-    predictions = loaded_model.predict(test_x)
-
     predict_x = convert_csv2predict_df(CSV_DATAPATH)
-    predictions = loaded_model.predict([predict_x])
+
+    mlflow.set_experiment("/my-evaluations")
+    with mlflow.start_run() as run:
+        mlflow.log_param(key='predict_date', value='7/1')
+        predictions = loaded_model.predict([predict_x])
+        mlflow.log_metric(key='predict_score', value=predictions[0])
+        print('====predictions=====>>',predictions[0])    
+
 
 def convert_csv2preprocessed_df(CSV_DATAPATH:str) -> pd.DataFrame:
     df = pd.read_csv(CSV_DATAPATH)
@@ -99,7 +104,8 @@ def rfc_with_mlflow(train_x, test_x ,train_y, test_y):
 def convert_csv2predict_df(CSV_DATAPATH:str) -> pd.DataFrame:
     df = pd.read_csv(CSV_DATAPATH)[0:10]
     predict_date = df.loc[:, ['game_date']]
-    print('target_dates\n', predict_date)
+    # print('target_dates\n', predict_date)
+    print('predict date :', predict_date.iat[0, 0])
 
     # 説明変数系の前処理
     predict_x = df.drop(['game_date', 'home_run'], axis=1).mean()
