@@ -32,16 +32,18 @@ def main():
     run_id = run.info.run_id
     print('====run_id=====>>',run_id)
 
-    # 実際に翌日のデータを推論する
-    loaded_model = mlflow.sklearn.load_model(f'runs:/{run_id}/model')
-    predict_x = convert_csv2predict_df(CSV_DATAPATH)
+    predict(run_id, CSV_DATAPATH)
 
-    mlflow.set_experiment("/my-evaluations")
-    with mlflow.start_run() as run:
-        mlflow.log_param(key='predict_date', value='7/1')
-        predictions = loaded_model.predict([predict_x])
-        mlflow.log_metric(key='predict_score', value=predictions[0])
-        print('====predictions=====>>',predictions[0])    
+    # # 実際に翌日のデータを推論する
+    # loaded_model = mlflow.sklearn.load_model(f'runs:/{run_id}/model')
+    # predict_x = convert_csv2predict_df(CSV_DATAPATH)
+
+    # mlflow.set_experiment("/my-evaluations")
+    # with mlflow.start_run() as run:
+    #     mlflow.log_param(key='predict_date', value='7/1')
+    #     predictions = loaded_model.predict([predict_x])
+    #     mlflow.log_metric(key='predict_score', value=predictions[0])
+    #     print('====predictions=====>>',predictions[0])    
 
 
 def convert_csv2preprocessed_df(CSV_DATAPATH:str) -> pd.DataFrame:
@@ -105,11 +107,31 @@ def convert_csv2predict_df(CSV_DATAPATH:str) -> pd.DataFrame:
     df = pd.read_csv(CSV_DATAPATH)[0:10]
     predict_date = df.loc[:, ['game_date']]
     # print('target_dates\n', predict_date)
+    # TODO:日付は誤り
     print('predict date :', predict_date.iat[0, 0])
 
     # 説明変数系の前処理
     predict_x = df.drop(['game_date', 'home_run'], axis=1).mean()
     return predict_x
+
+
+def predict(run_id:str, CSV_DATAPATH:str) -> None:
+    # 最後の訓練で作成したrunidのモデルをロード
+    loaded_model = mlflow.sklearn.load_model(f'runs:/{run_id}/model')
+    # predict専用の前処理
+    predict_x = convert_csv2predict_df(CSV_DATAPATH)
+
+    # predict用のExperimentを作って実行、ロギングする
+    mlflow.set_experiment("/my-evaluations")
+    # runの実行
+    with mlflow.start_run() as run:
+        # 実行日を取得する
+        mlflow.log_param(key='predict_date', value='7/1')
+        # 推論実行と記録
+        predictions = loaded_model.predict([predict_x])
+        mlflow.log_metric(key='predict_score', value=predictions[0])
+        print('====predictions=====>>',predictions[0])    
+
 
 
 if __name__ == '__main__':
