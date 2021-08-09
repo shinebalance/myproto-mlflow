@@ -19,6 +19,7 @@ dag = DAG(
     'test_hooktack',
     default_args=default_args,
     description='For TEST execute DAG by hooktack',
+    # schedule_interval=timedelta(minutes=5),
     schedule_interval=timedelta(days=1),
 )
 
