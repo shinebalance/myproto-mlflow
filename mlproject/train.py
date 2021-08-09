@@ -5,16 +5,29 @@ import pandas as pd
 import matplotlib
 # from local
 import config
+import datetime
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+
+# loggerの設定
+# https://qiita.com/amedama/items/b856b2f30c2f38665701
+from logging import basicConfig, getLogger, INFO
+
+# loggerのconfig
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+basicConfig(filename='logs/train.log', level=INFO, format=fmt)
+logger = getLogger(__name__)
 
 
 def main():
     '''
     main process
     '''
+    # 開始
+    logger.info('----start----')
+
     # 固定パラメータ取得
     CSV_DATAPATH = config.CSV_DATAPATH
 
@@ -30,7 +43,8 @@ def main():
 
     run = rfc_with_mlflow(train_x, test_x ,train_y, test_y)
     run_id = run.info.run_id
-    print('====run_id=====>>',run_id)
+    logger.info(f'====run_id=====>>{run_id}')
+
 
     predict(run_id, CSV_DATAPATH)
 
@@ -44,6 +58,9 @@ def main():
     #     predictions = loaded_model.predict([predict_x])
     #     mlflow.log_metric(key='predict_score', value=predictions[0])
     #     print('====predictions=====>>',predictions[0])    
+
+    # 終了
+    logger.info('----end----')
 
 
 def convert_csv2preprocessed_df(CSV_DATAPATH:str) -> pd.DataFrame:
@@ -106,31 +123,33 @@ def rfc_with_mlflow(train_x, test_x ,train_y, test_y):
 def convert_csv2predict_df(CSV_DATAPATH:str) -> pd.DataFrame:
     df = pd.read_csv(CSV_DATAPATH)[0:10]
     predict_date = df.loc[:, ['game_date']]
-    # print('target_dates\n', predict_date)
-    # TODO:日付は誤り
-    print('predict date :', predict_date.iat[0, 0])
+    # 推論に使ったデータの最後の日
+    last_predict_day = predict_date.iat[0, 0]
+    logger.info(f'====last predict day :{last_predict_day}')
 
     # 説明変数系の前処理
     predict_x = df.drop(['game_date', 'home_run'], axis=1).mean()
-    return predict_x
+    return predict_x, last_predict_day
 
 
 def predict(run_id:str, CSV_DATAPATH:str) -> None:
     # 最後の訓練で作成したrunidのモデルをロード
     loaded_model = mlflow.sklearn.load_model(f'runs:/{run_id}/model')
     # predict専用の前処理
-    predict_x = convert_csv2predict_df(CSV_DATAPATH)
+    predict_x, last_predict_day = convert_csv2predict_df(CSV_DATAPATH)
 
     # predict用のExperimentを作って実行、ロギングする
     mlflow.set_experiment("/my-evaluations")
     # runの実行
     with mlflow.start_run() as run:
         # 実行日を取得する
-        mlflow.log_param(key='predict_date', value='7/1')
+        mlflow.log_param(key='last_predict_day', value=last_predict_day)
         # 推論実行と記録
         predictions = loaded_model.predict([predict_x])
         mlflow.log_metric(key='predict_score', value=predictions[0])
-        print('====predictions=====>>',predictions[0])    
+        # print('====predictions=====>>',predictions[0])    
+        logger.info(f'====predictions=====>>{predictions[0]}')
+
 
 
 
