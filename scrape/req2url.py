@@ -7,15 +7,26 @@ import csv
 import requests
 import lxml.html
 
-import config
+# loggerの設定
+# https://qiita.com/amedama/items/b856b2f30c2f38665701
+from logging import basicConfig, getLogger, DEBUG
 
+import config
 from item import ShoheiBattingScore
+
+# loggerのconfig
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+basicConfig(filename='logs/req2url.log', level=DEBUG, format=fmt)
+logger = getLogger(__name__)
 
 
 def main():
     '''
     main process
     '''
+    # 開始
+    logger.debug('start')
+
     # 固定パラメータ取得
     URL = config.TARGET_URL
     CSV_SAVEPATH = config.CSV_SAVEPATH
@@ -25,6 +36,9 @@ def main():
 
     # スクレイプ処理
     scrape_shohei_batting_score(tree, CSV_SAVEPATH)
+
+    # 終了
+    logger.debug('end')
 
 
 def fetch_txt_from_req(url: str) -> str:
@@ -38,6 +52,8 @@ def fetch_txt_from_req(url: str) -> str:
     encoding = r.headers['Content-Encoding']
     # encode
     r.encoding = encoding
+    # log
+    logger.debug('got text from url')
     # return encoded text
     return r.text
 
@@ -64,7 +80,9 @@ def scrape_shohei_batting_score(tree: lxml.html.HtmlElement, csv_savepath: str) 
 
     # 絞り込んだ対象テーブルの情報をもとに、各月ごとのデータを取得
     for target_num in target_divchild_list:
-        print(tree.cssselect(f'#main2 > div:nth-child({target_num}) > h3')[0].text_content())
+        # 対象月のlog
+        logger.debug(tree.cssselect(f'#main2 > div:nth-child({target_num}) > h3')[0].text_content())
+        # print(tree.cssselect(f'#main2 > div:nth-child({target_num}) > h3')[0].text_content())
         # 対象試合日の絞り込み
         # target_date_list = []
         # 対象月のデータ業があるのはtarget_divchild_listに記載されている番号の+1なので
