@@ -8,13 +8,20 @@ services:
       - ./mlruns-artifacts:/mlruns-artifacts/
     ports:
       - "5000:5000"
+    environment:
+      TZ: Asia/Tokyo
 
   airflow-server:
     build: ./airflow-server
     container_name: airflow-server
     volumes:
       - ./airflow-server:/opt/airflow/
-      - ./airflow-test:/root/airflow-test
+      - ./scrape:/opt/scrape/
+      - ./mlproject:/opt/mlproject/
+      - ./logs:/opt/logs/
+      - ./data:/opt/data/
     ports:
       - "5005:5005"
     tty: true
+    environment:
+      TZ: Asia/Tokyo
