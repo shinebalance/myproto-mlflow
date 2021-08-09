@@ -5,6 +5,7 @@ mlruns-artifacts
 .DS_Store
 __pycache__/
 *.log
+*.sqlite3
 
 # Airflow関係
 airflow-server/airflow*
