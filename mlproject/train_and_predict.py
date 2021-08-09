@@ -27,37 +27,26 @@ def main():
     '''
     # 開始
     logger.info('----start----')
+    logger.info('----get data----')
 
     # 固定パラメータ取得
     CSV_DATAPATH = config.CSV_DATAPATH
-
     # csvを読み込んで前処理済のdataframe作成
     df_preprocessed = convert_csv2preprocessed_df(CSV_DATAPATH)
-
     # データ分割
     train_x, test_x ,train_y, test_y = divide_xydatas(df_preprocessed)
-
-    # tracking uri
-    mlflow.set_tracking_uri('http://localhost:5000/')
+    # set tracking uri
+    # mlflow.set_tracking_uri('http://localhost:5000/')
+    mlflow.set_tracking_uri('http://mlflow-server:5000/')
     mlflow.set_experiment("/my-experiment-mlruns-artifacts")
 
+    logger.info('----train model----')
     run = rfc_with_mlflow(train_x, test_x ,train_y, test_y)
     run_id = run.info.run_id
     logger.info(f'====run_id=====>>{run_id}')
 
-
+    logger.info('----predict----')
     predict(run_id, CSV_DATAPATH)
-
-    # # 実際に翌日のデータを推論する
-    # loaded_model = mlflow.sklearn.load_model(f'runs:/{run_id}/model')
-    # predict_x = convert_csv2predict_df(CSV_DATAPATH)
-
-    # mlflow.set_experiment("/my-evaluations")
-    # with mlflow.start_run() as run:
-    #     mlflow.log_param(key='predict_date', value='7/1')
-    #     predictions = loaded_model.predict([predict_x])
-    #     mlflow.log_metric(key='predict_score', value=predictions[0])
-    #     print('====predictions=====>>',predictions[0])    
 
     # 終了
     logger.info('----end----')
@@ -149,7 +138,6 @@ def predict(run_id:str, CSV_DATAPATH:str) -> None:
         mlflow.log_metric(key='predict_score', value=predictions[0])
         # print('====predictions=====>>',predictions[0])    
         logger.info(f'====predictions=====>>{predictions[0]}')
-
 
 
 
