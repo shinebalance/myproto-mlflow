@@ -43,6 +43,10 @@ airflow scheduler
 * 任意のMLプロジェクト実行スクリプトをもつ
   * csvデータを読み込んでモデル訓練、推論を行う
   * 結果をmlflow-serverに書き込む
+* `.env`の書き方例
+```
+CSV_DATAPATH = './data/hogehoge.csv'
+```
 
 ### [mlruns-artifacts](mlruns-artifacts)
 * mlprojectが実行された際に生成されるArtifactの置き場所(model等々)
@@ -50,6 +54,11 @@ airflow scheduler
 ### [scrape](scrape)
 * 任意のデータスクレピングスクリプトをもつ
   * 任意のURLに対してスクレイピングを行い、必要なデータをcsv化する
+* `.env`の書き方例
+```
+TARGET_URL = 'https://hogehoge.com/hogepage'
+CSV_SAVEPATH = './data/hogehoge.csv'
+```
 
 ## ローカル稼働時のPipenv
 * Pipfileも利用できる
