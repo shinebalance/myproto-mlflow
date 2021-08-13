@@ -10,6 +10,7 @@
 ```
 docker-compose -f docker-compose.yml up --build
 # Airflowのschedulerを利用したい場合は、コンテナ内に入って以下手順でscheduler起動
+docker-compose exec airflow-server bash
 airflow scheduler
 ```
 
@@ -71,14 +72,9 @@ CSV_SAVEPATH = './data/hogehoge.csv'
   - [x] Dockerfileにpipenv環境の構築を追加する
   - [x] pipenvのコマンドから各処理を行えるようディレクトリ整理
   - [x] DAGに設定してスケジュール実行する
-- [ ] リモート環境に移行する
-  - [ ] Docker-compose環境をマシン上につくる
-  - [ ] 移行して動かす
-  - [ ] 終わり？
+- [x] リモート環境に移行する
+  - [x] Docker-compose環境をマシン上につくる
+  - [x] 移行して動かす
 
-
-```
-pipenv lock -r >> airflow-server/requirements.txt
-```
 
 # EOF
