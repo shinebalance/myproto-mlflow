@@ -2,7 +2,7 @@
 * MLflowの理解がてら、トイプロブレム的なデータ収集->モデル訓練->推論を一通り書いたリポジトリ
   * モデルそのものの有用性は度外視(かなり適当な前処理＋RandomForestをしているだけ)
 * Pythonの各処理はAirflowのDAGに設定して実行する
-  * 本来cronで出来るレベルのことをDocker-compose内で完結させるためにAirflowを使っており、細かくは
+  * 本来cronで出来るレベルのことをDocker-compose内で完結させるためだけにAirflowを使っており、厳密にはAirflowが必要なほど複雑なワークフローは実行していない
 
 ## How to run
 * とりあえず可搬性高く何も考えず動かせるように、Docker-composeで動かせるようにした
